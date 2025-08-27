@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Clientes · Agendaí</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
+        .modal-conteudo { background-color: #fefefe; margin: 10% auto; padding: 20px; border-radius: 8px; width: 400px; position: relative; }
+        .fechar { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; }
+    </style>
+</head>
+<body>
+  <nav>
+    <a href="/">Início</a>
+    <a href="/salvar">Agendamentos</a>
+    <a href="/novo">Novo Agendamento</a>
+    <a href="/clientes">Clientes</a>
+    <a href="servicos.html">Serviços</a>
+    <a href="profissionais.html">Profissionais</a>
+    <a href="configuracoes.html">Configurações</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="/clientes/novo">Novo Cliente</a>
+  </nav>
+
+<div class="container">
+
+    <h1>Clientes</h1>
+    <p>Total de clientes: <span th:text="${clientes.size()}"></span></p>
+    <button id="abrirModal">Novo Cliente</button>
+
+    <!-- Lista de clientes -->
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th><th>Nome</th><th>Telefone</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="cliente : ${clientes}">
+            <td th:text="${cliente.id}"></td>
+            <td th:text="${cliente.nome}"></td>
+            <td th:text="${cliente.telefone}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Modal -->
+    <div id="modalCliente" class="modal">
+        <div class="modal-conteudo">
+            <span class="fechar">&times;</span>
+            <h2>Cadastrar Cliente</h2>
+            <form th:action="@{/clientes}" th:object="${novoCliente}" method="post">
+                <label>Nome:</label><br>
+                <input type="text" th:field="*{nome}" required /><br><br>
+                <label>Telefone:</label><br>
+                <input type="text" th:field="*{telefone}" required /><br><br>
+                <button type="submit">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const modal = document.getElementById("modalCliente");
+    const btn = document.getElementById("abrirModal");
+    const span = document.querySelector(".fechar");
+
+    btn.onclick = () => modal.style.display = "block";
+    span.onclick = () => modal.style.display = "none";
+    window.onclick = (event) => { if(event.target === modal) modal.style.display = "none"; }
+</script>
+</body>
+</html>
