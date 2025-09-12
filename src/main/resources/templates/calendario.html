@@ -13,36 +13,26 @@
     </style>
 </head>
 <body>
-    <h1 style="text-align:center;">Calendário de Agendamentos</h1>
-    <div id="calendar"></div>
+    <h1>Calendário de Agendamentos</h1>
+  <div id="calendar"></div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let calendarEl = document.getElementById('calendar');
-
-            let calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'pt-br',
-                selectable: true,
-                dateClick: function(info) {
-                    alert('Data selecionada: ' + info.dateStr);
-                    // Podemos abrir um modal aqui depois
-                },
-                events: async function(fetchInfo, successCallback) {
-                    let res = await fetch('/agendamentos/datas-ocupadas');
-                    let datas = await res.json();
-                    let eventos = datas.map(data => ({
-                        title: 'Indisponível',
-                        start: data,
-                        allDay: true,
-                        color: 'red'
-                    }));
-                    successCallback(eventos);
-                }
-            });
-
-            calendar.render();
-        });
-    </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'pt-br',
+        events: '/api/agendamentos', // pega os agendamentos do backend
+        eventDataTransform: function(eventData) {
+          return {
+            id: eventData.id,
+            title: eventData.cliente + " - " + eventData.servico,
+            start: eventData.dataHora // precisa estar no formato ISO (ex: 2025-09-11T14:00)
+          }
+        }
+      });
+      calendar.render();
+    });
+  </script>
 </body>
 </html>

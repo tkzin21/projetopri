@@ -1,7 +1,9 @@
 package com.agendai.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class Agendamento {
@@ -11,7 +13,9 @@ public class Agendamento {
 
     private String cliente;
     private String servico;
-    private LocalDate data;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime dataHora;
 
     // Getters e Setters
     public Long getId() { return id; }
@@ -23,6 +27,6 @@ public class Agendamento {
     public String getServico() { return servico; }
     public void setServico(String servico) { this.servico = servico; }
 
-    public LocalDate getData() { return data; }
-    public void setData(LocalDate data) { this.data = data; }
+    public LocalDateTime getDataHora() { return dataHora; }
+    public void setDataHora(LocalDateTime dataHora) { this.dataHora = dataHora; }
 }

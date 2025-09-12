@@ -19,10 +19,21 @@
     <a href="sobre.html">Sobre</a>
     <a href="/clientes/novo">Novo Cliente</a>
   </nav>
-  <hr>
-    
   <h1>Novo Agendamento</h1>
-  <form><input placeholder=''></form>
+
+  <form th:action="@{/salvar}" th:object="${agendamento}" method="post">
+    <label>Cliente:</label>
+    <input type="text" th:field="*{cliente}" required><br>
+
+    <label>Serviço:</label>
+    <input type="text" th:field="*{servico}" required><br>
+
+    <label>Data e Hora:</label>
+<input type="datetime-local" th:field="*{dataHora}" step="60" required><br>
+
+    <button type="submit">Salvar</button>
+</form>
+
 </div>
 <script src="/app.js"></script>
 </body>
