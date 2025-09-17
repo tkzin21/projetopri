@@ -5,7 +5,11 @@ import com.agendai.repository.AgendamentoRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class AgendamentoController {
@@ -42,4 +46,17 @@ public class AgendamentoController {
     public List<Agendamento> listarAgendamentosApi() {
         return repository.findAll();
     }
+
+    @GetMapping("/calendario")
+    public String calendario(Model model) {
+        List<Agendamento> agendamentos = repository.findAll();
+
+        // Mapear por data
+        Map<LocalDate, List<Agendamento>> agendamentosPorDia = agendamentos.stream()
+                .collect(Collectors.groupingBy(a -> a.getDataHora().toLocalDate()));
+
+        model.addAttribute("agendamentosPorDia", agendamentosPorDia);
+        return "calendario";
+    }
+    
 }
