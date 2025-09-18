@@ -83,7 +83,96 @@ button:hover {
   padding: 5px 0;
   border-bottom: 1px solid #ddd;
 }
-
+.fc-event-title {
+  font-size: 0.75rem; /* reduz o tamanho do texto */
+  white-space: nowrap; /* evita quebra de linha */
+  overflow: hidden;    /* esconde excesso de texto */
+  text-overflow: ellipsis; /* mostra "..." se não couber */
+}
+.fc .fc-daygrid-day {
+  min-height: 80px; /* ajusta conforme necessário */
+}
 .agendamento-item:last-child {
   border-bottom: none;
 }
+.agendamento-item button {
+  background: #e74c3c;
+}
+.agendamento-item button:hover {
+  background: #c0392b;
+}
+form label {
+  display: block;
+  margin-top: 10px;
+}
+form input, form select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+form button {
+  margin-top: 15px;
+}
+form button:hover {
+  background: #27ae60;
+}
+.error {
+  color: red;
+  margin-top: 10px;
+}
+.success {
+  color: green;
+  margin-top: 10px;
+}
+.loading {
+  display: none;
+  text-align: center;
+  margin-top: 20px;
+}
+.loading img {
+  width: 50px;
+  height: 50px;
+}
+/* Responsive */
+@media (max-width: 600px) {
+  body {
+    margin: 10px;
+  }
+  table, th, td {
+    font-size: 14px;
+  }
+  .modal-content {
+    width: 90%;
+    margin: 20% auto;
+  }
+}
+.agendamentos-section {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  width: 1000px;
+  
+}
+.existing-agendamentos,.new-agendamento,.calendar-section {
+  flex: 1;
+
+  border: #2c3e50 1px solid;
+  padding: 15px;
+  border-radius: 8px;
+  margin-right: 10px;
+    margin: 1px 0px;
+
+}
+.existing-agendamentos,.new-agendamento{
+  max-height: 600px;
+  overflow-y: auto;
+  max-width: 300px;
+
+}
+.calendar-section{
+width: 100%;
+
+}
+/* End of style.css */

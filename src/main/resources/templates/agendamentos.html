@@ -29,106 +29,120 @@
       <a href="/calendario">Calendario</a>
     </nav>
     <hr>
-    
-  <h1>Agendamentos</h1>
-  <div th:if="${erro}">
-    <p style="color: red;" th:text="${erro}"></p>
-</div>
-<div th:if="${sucesso}">
-    <p style="color: green;" th:text="${sucesso}"></p>
-</div>
 
-<form th:action="@{/agendar}" th:object="${novoAgendamento}" method="post">
-    <label>Nome:</label>
-    <input type="text" th:field="*{nomeCliente}" required><br>
+    <h1>Agendamentos</h1>
 
-    <label>Contato:</label>
-    <input type="text" th:field="*{contato}" required><br>
+    <div class="agendamentos-section">
+      <div class="new-agendamento">
+       
 
-    <label>Data e Hora:</label>
-    <input type="datetime-local" th:field="*{dataHora}" required><br>
+        <form th:action="@{/agendar}" th:object="${novoAgendamento}" method="post">
+          <label>Nome:</label>
+          <input type="text" th:field="*{nomeCliente}" required><br>
 
-    <label>Observação:</label>
-    <textarea th:field="*{observacao}"></textarea><br>
+          <label>Contato:</label>
+          <input type="text" th:field="*{contato}" required><br>
 
-    <button type="submit">Agendar</button>
-</form>
+          <label>Data e Hora:</label>
+          <input type="datetime-local" th:field="*{dataHora}" required><br>
 
-<h2>Agendamentos existentes</h2>
-<ul>
-    <li th:each="agendamento : ${agendamentos}">
-        <span th:text="${agendamento.nomeCliente}"></span> -
-        <span th:text="${#temporals.format(agendamento.dataHora, 'dd/MM/yyyy HH:mm')}"></span>
-    </li>
-</ul>
-  
-  <script src="/app.js"></script>
-  <h1 style="text-align:center;">Calendário de Agendamentos</h1>
-    <div id="calendar"></div>
+          <label>Observação:</label>
+          <textarea th:field="*{observacao}"></textarea><br>
 
-    <!-- Modal -->
-    <div id="detalhesModal" class="modal">
-        <div class="modal-content">
+          <button type="submit">Agendar</button>
+
+        </form>
+        <div th:if="${erro}">
+          <p style="color: red;" th:text="${erro}"></p>
+        </div>
+        <div th:if="${sucesso}">
+          <p style="color: green;" th:text="${sucesso}"></p>
+        </div>  
+      </div>
+      <div class="existing-agendamentos">
+        <h2>Agendamentos existentes</h2>
+        <ul>
+          <li th:each="agendamento : ${agendamentos}">
+            <span th:text="${agendamento.nomeCliente}"></span> -
+            <span th:text="${#temporals.format(agendamento.dataHora, 'dd/MM/yyyy HH:mm')}"></span>
+          </li>
+        </ul>
+      </div>
+
+      <script src="/app.js"></script>
+      <div class="calendar-section">
+        <h1 style="text-align:center;   border: #2c3e50 1px solid;
+          padding: 15px;
+        border-radius: 8px;
+        margin-right: 10px;
+          margin: 1px 0px;">Calendário de Agendamentos</h1>
+        <div id="calendar"></div>
+
+        <!-- Modal -->
+        <div id="detalhesModal" class="modal">
+          <div class="modal-content">
             <span class="close" id="modalClose">&times;</span>
             <h2 id="modalData"></h2>
             <div id="modalAgendamentos"></div>
+          </div>
         </div>
+      </div>
     </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const calendarEl = document.getElementById('calendar');
-            const modal = document.getElementById('detalhesModal');
-            const modalClose = document.getElementById('modalClose');
-            const modalData = document.getElementById('modalData');
-            const modalAgendamentos = document.getElementById('modalAgendamentos');
+      document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+        const modal = document.getElementById('detalhesModal');
+        const modalClose = document.getElementById('modalClose');
+        const modalData = document.getElementById('modalData');
+        const modalAgendamentos = document.getElementById('modalAgendamentos');
+      
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          locale: 'pt-br',
+          events: '/api/agendamentos', // Backend já deve devolver {id, title, start, servico}
+          dayMaxEvents: true, // mostra "+1" se muitos eventos no mesmo dia
+          eventDidMount: function (info) {
+            // Tooltip simples com o serviço
+            if (info.event.extendedProps.servico) {
+              info.el.setAttribute('title', info.event.extendedProps.servico);
+            }
 
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'pt-br',
-                events: '/api/agendamentos', // Backend já deve devolver {id, title, start, servico}
-                eventDidMount: function(info) {
-                    // Tooltip simples com o serviço
-                    if (info.event.extendedProps.servico) {
-                        info.el.setAttribute('title', info.event.extendedProps.servico);
-                    }
+            // Clique no evento abre o modal
+            info.el.addEventListener('click', function () {
+              const dia = info.event.start.toLocaleDateString('pt-BR');
+              modalData.textContent = "Agendamentos de " + dia;
+              modalAgendamentos.innerHTML = "";
 
-                    // Clique no evento abre o modal
-                    info.el.addEventListener('click', function() {
-                        const dia = info.event.start.toLocaleDateString('pt-BR');
-                        modalData.textContent = "Agendamentos de " + dia;
-                        modalAgendamentos.innerHTML = "";
+              // Filtra todos eventos do mesmo dia
+              const agsDoDia = calendar.getEvents().filter(a =>
+                a.start.toDateString() === info.event.start.toDateString()
+              );
 
-                        // Filtra todos eventos do mesmo dia
-                        const agsDoDia = calendar.getEvents().filter(a => 
-                            a.start.toDateString() === info.event.start.toDateString()
-                        );
+              agsDoDia.forEach(a => {
+                const div = document.createElement('div');
+                div.classList.add('agendamento-item');
+                div.innerHTML = `<strong>${a.title}</strong> - ${a.extendedProps.servico || ""} 
+                                             (${a.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })})`;
+                modalAgendamentos.appendChild(div);
+              });
 
-                        agsDoDia.forEach(a => {
-                            const div = document.createElement('div');
-                            div.classList.add('agendamento-item');
-                            div.innerHTML = `<strong>${a.title}</strong> - ${a.extendedProps.servico || ""} 
-                                             (${a.start.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})})`;
-                            modalAgendamentos.appendChild(div);
-                        });
-
-                        modal.style.display = 'block';
-                    });
-                }
+              modal.style.display = 'block';
             });
-
-            calendar.render();
-
-            // Fechar modal
-            modalClose.onclick = function() {
-                modal.style.display = "none";
-            };
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            };
+          }
         });
+
+        calendar.render();
+
+        // Fechar modal
+        modalClose.onclick = function () {
+          modal.style.display = "none";
+        };
+        window.onclick = function (event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        };
+      });
     </script>
 </body>
 
