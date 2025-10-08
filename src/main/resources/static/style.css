@@ -92,6 +92,19 @@ button:hover {
 .fc .fc-daygrid-day {
   min-height: 80px; /* ajusta conforme necessário */
 }
+/* Remove o scroll lateral e força o calendário a ocupar todo o espaço visível */
+.fc {
+  overflow: hidden !important;
+}
+
+.fc-scroller {
+  overflow: hidden !important;
+}
+
+.fc-view-harness {
+  overflow: hidden !important;
+}
+
 .agendamento-item:last-child {
   border-bottom: none;
 }
@@ -152,8 +165,7 @@ form button:hover {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  width: 1000px;
-  
+  width: -webkit-fill-available;
 }
 .existing-agendamentos,.new-agendamento,.calendar-section {
   flex: 1;
@@ -166,13 +178,19 @@ form button:hover {
 
 }
 .existing-agendamentos,.new-agendamento{
-  max-height: 600px;
+
   overflow-y: auto;
-  max-width: 300px;
+  
 
 }
 .calendar-section{
 width: 100%;
 
+}
+.nav-menu{
+  display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: -webkit-fill-available;
 }
 /* End of style.css */

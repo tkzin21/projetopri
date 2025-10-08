@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Jogo PvP com Poderes Aleatórios</title>
+<style>
+  body { margin:0; background:#111; display:flex; justify-content:center; align-items:center; height:100vh; color:white; font-family:Arial; user-select:none; }
+  canvas { background:#222; border:3px solid white; }
+  #score { position:absolute; top:10px; font-size:22px; font-weight:bold; }
+  #powerup-desc { position:absolute; bottom:10px; font-size:16px; text-align:center; width:100%; }
+</style>
+</head>
+<body>
+<div id="score"></div>
+<div id="powerup-desc">
+Power-ups: <span style="color:pink;">❤ Life</span> | <span style="color:yellow;">⚡ Speed</span> | <span style="color:orange;">🔥 Stronger Bullet</span>
+</div>
+<canvas id="game" width="600" height="400"></canvas>
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const scoreDiv = document.getElementById("score");
+
+// Sons
+const soundShoot = new Audio("https://freesound.org/data/previews/66/66717_931655-lq.mp3");
+const soundHitPlayer = new Audio("https://freesound.org/data/previews/170/170090_2437358-lq.mp3");
+const soundHitObstacle = new Audio("https://freesound.org/data/previews/256/256113_4486188-lq.mp3");
+const soundPowerUp = new Audio("https://freesound.org/data/previews/331/331912_3248244-lq.mp3");
+
+// Players
+const player1Name = prompt("Nome Player Vermelho:","Vermelho")||"Vermelho";
+const player2Name = prompt("Nome Player Azul:","Azul")||"Azul";
+const player1 = { x:80, y:200, r:15, color:"red", speed:3, score:0, name:player1Name, life:5, shots:0 };
+const player2 = { x:520, y:200, r:15, color:"blue", speed:3, score:0, name:player2Name, life:5, shots:0 };
+
+const keys = {}, bullets = [], powerUps = [];
+const arena = { w:600, h:400 }; // Tamanho fixo
+const obstacles = [];
+for(let i=0;i<12;i++) obstacles.push({ x: Math.random()*580, y: Math.random()*380, w:20, h:20, life:3 });
+
+// Auto-fire
+let autoFire1 = null;
+let autoFire2 = null;
+document.addEventListener("keydown", e=>{
+  keys[e.key]=true;
+  if(e.key===" " && !autoFire1) autoFire1=setInterval(()=>fire(player1),200);
+  if(e.key==="0" && !autoFire2) autoFire2=setInterval(()=>fire(player2),200);
+});
+document.addEventListener("keyup", e=>{
+  keys[e.key]=false;
+  if(e.key===" " && autoFire1){ clearInterval(autoFire1); autoFire1=null; }
+  if(e.key==="0" && autoFire2){ clearInterval(autoFire2); autoFire2=null; }
+});
+
+// Função de tiro
+function fire(player){
+  let damage = 1 + Math.floor(player.shots/5);
+  bullets.push({ x:player.x, y:player.y, r:5, color:player.color, dx:player===player1?5:-5, dy:0, owner:player===player1?1:2, damage:damage });
+  player.shots++;
+  soundShoot.currentTime=0; soundShoot.play();
+
+  // Power surge aleatório a cada 10 tiros
+  if(player.shots % 10 === 0){
+    spawnRandomPower(player);
+  }
+}
+
+// Spawna power-ups aleatórios
+function spawnRandomPower(player){
+  const type = Math.floor(Math.random()*3);
+  powerUps.push({
+    x: Math.random()*(arena.w-20),
+    y: Math.random()*(arena.h-20),
+    r:10,
+    type: type
+  });
+}
+
+// Funções utilitárias
+function checkCollisionCircleRect(circle, rect){
+  let closestX=Math.max(rect.x, Math.min(circle.x, rect.x+rect.w));
+  let closestY=Math.max(rect.y, Math.min(circle.y, rect.y+rect.h));
+  let dx=circle.x-closestX, dy=circle.y-closestY;
+  return dx*dx + dy*dy < circle.r*circle.r;
+}
+
+function movePlayer(player,up,down,left,right){
+  let oldX=player.x, oldY=player.y;
+  if(keys[up]) player.y-=player.speed;
+  if(keys[down]) player.y+=player.speed;
+  if(keys[left]) player.x-=player.speed;
+  if(keys[right]) player.x+=player.speed;
+  if(player.x-player.r<0) player.x=player.r;
+  if(player.y-player.r<0) player.y=player.r;
+  if(player.x+player.r>arena.w) player.x=arena.w-player.r;
+  if(player.y+player.r>arena.h) player.y=arena.h-player.r;
+  for(let obs of obstacles){ if(checkCollisionCircleRect(player,obs)){ player.x=oldX; player.y=oldY; } }
+}
+
+// Atualização do jogo
+function update(){
+  movePlayer(player1,"w","s","a","d");
+  movePlayer(player2,"ArrowUp","ArrowDown","ArrowLeft","ArrowRight");
+
+  // Bullets
+  for(let i=bullets.length-1;i>=0;i--){
+    let b = bullets[i]; b.x+=b.dx; b.y+=b.dy;
+    if(b.x<0||b.x>arena.w||b.y<0||b.y>arena.h){ bullets.splice(i,1); continue; }
+
+    // Obstáculos
+    let hitObs=false;
+    for(let obs of obstacles){
+      if(checkCollisionCircleRect(b,obs)){
+        obs.life-=b.damage; bullets.splice(i,1); hitObs=true; soundHitObstacle.currentTime=0; soundHitObstacle.play();
+        if(obs.life<=0) obstacles.splice(obstacles.indexOf(obs),1);
+        break;
+      }
+    } if(hitObs) continue;
+
+    // Players
+    let dx1=b.x-player1.x, dy1=b.y-player1.y, dx2=b.x-player2.x, dy2=b.y-player2.y;
+    if(Math.sqrt(dx1*dx1+dy1*dy1)<b.r+player1.r && b.owner!==1){ player1.life-=b.damage; bullets.splice(i,1); soundHitPlayer.currentTime=0; soundHitPlayer.play(); if(player1.life<=0){ player2.score++; autoReset(); break;} continue; }
+    if(Math.sqrt(dx2*dx2+dy2*dy2)<b.r+player2.r && b.owner!==2){ player2.life-=b.damage; bullets.splice(i,1); soundHitPlayer.currentTime=0; soundHitPlayer.play(); if(player2.life<=0){ player1.score++; autoReset(); break;} continue; }
+  }
+
+  // Power-ups
+  for(let i=powerUps.length-1;i>=0;i--){
+    let p=powerUps[i]; [player1,player2].forEach(pl=>{
+      let dx=p.x-pl.x, dy=p.y-pl.y;
+      if(Math.sqrt(dx*dx+dy*dy)<p.r+pl.r){
+        if(p.type===0) pl.life++;
+        if(p.type===1) pl.speed++;
+        if(p.type===2) bullets.push({x:pl.x,y:pl.y,r:8,dx:pl===player1?7:-7,dy:0,owner:pl===player1?1:2,damage:2});
+        powerUps.splice(i,1); soundPowerUp.currentTime=0; soundPowerUp.play();
+      }
+    });
+  }
+}
+
+// Reset automático
+function autoReset(){
+  player1.x=80; player1.y=200; player1.life=5; player1.speed=3; player1.shots=0;
+  player2.x=520; player2.y=200; player2.life=5; player2.speed=3; player2.shots=0;
+  bullets.length=0;
+  updateScore();
+}
+
+// Score
+function updateScore(){ scoreDiv.textContent = `${player1.name} 🔴 ${player1.score} | ${player2.score} 🔵 ${player2.name}`; }
+
+// Desenho
+function draw(){
+  ctx.clearRect(0,0,arena.w,arena.h);
+  obstacles.forEach(obs=>{ ctx.fillStyle="gray"; ctx.fillRect(obs.x,obs.y,obs.w,obs.h); ctx.fillStyle="lime"; ctx.fillRect(obs.x,obs.y-5,obs.w*(obs.life/3),3); });
+  powerUps.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=p.type===0?"pink":p.type===1?"yellow":"orange"; ctx.fill(); });
+  [player1,player2].forEach(pl=>{ ctx.beginPath(); ctx.arc(pl.x,pl.y,pl.r,0,Math.PI*2); ctx.fillStyle=pl.color; ctx.fill(); ctx.fillStyle="lime"; ctx.fillRect(pl.x-15,pl.y-25,30*(pl.life/5),5); });
+  bullets.forEach(b=>{ ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fillStyle=b.color; ctx.fill(); });
+}
+
+function loop(){ update(); draw(); requestAnimationFrame(loop); }
+updateScore(); loop();
+</script>
+</body>
+</html>
