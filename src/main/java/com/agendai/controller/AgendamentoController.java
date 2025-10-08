@@ -26,7 +26,13 @@ public class AgendamentoController {
     }
 
     
-
+    @GetMapping({"/", "/novo"})
+    public String mostrarFormulario(Model model) {
+        model.addAttribute("agendamentos", repository.findAll());
+        model.addAttribute("novoAgendamento", new Agendamento());
+        model.addAttribute("todosClientes", clienteRepository.findAll());
+        return "agendamentos"; // nome do template
+    }
     // Salvar agendamento
     @PostMapping("/salvar")
     public String salvarAgendamento(@ModelAttribute Agendamento agendamento) {
@@ -79,14 +85,7 @@ public class AgendamentoController {
         return "agendamentos";
     }
 
-    
-    @GetMapping("/novo") // 👈 Adicione isso
-    public String mostrarFormulario(Model model) {
-        model.addAttribute("agendamentos", repository.findAll());
-        model.addAttribute("novoAgendamento", new Agendamento());
-        model.addAttribute("todosClientes", clienteRepository.findAll());
-        return "agendamentos";
-    }
+
 
     @PostMapping("/agendar")
     public String salvarAgendamento(@ModelAttribute Agendamento agendamento,

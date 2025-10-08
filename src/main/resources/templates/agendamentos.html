@@ -14,8 +14,7 @@
 
     <nav class="nav-menu">
       <a href="/">Início</a>
-      <a href="/agendamentos">Agendamentos</a>
-      <a href="/novo">Novo Agendamento</a>
+      <a href="/novo">Agendamentos</a>
       <a href="/clientes">Clientes</a>
       <a href="servicos.html">Serviços</a>
       <a href="profissionais.html">Profissionais</a>
@@ -40,10 +39,10 @@
             <option th:each="c : ${todosClientes}" 
                     th:value="${c.id}" 
                     th:text="${c.nome}" 
-                    th:data-contato="${c.contato}">
+                    th:data-contato="${c.telefone}">
             </option>
           </select><br>
-        
+          
           <!-- Contato preenchido automaticamente -->
           <label for="contato">Contato:</label>
           <input type="text" id="contato" name="contato" readonly><br>
@@ -70,6 +69,7 @@
 
         <!-- Lista de agendamentos existentes -->
         <h2>Agendamentos existentes</h2>
+  
         <ul>
           <li th:each="agendamento : ${agendamentos}">
             <span th:text="${agendamento.nomeCliente}"></span> - 
