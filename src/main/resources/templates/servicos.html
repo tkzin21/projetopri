@@ -8,22 +8,27 @@
 <body>
 <div class="container">
   
-  <nav class="nav-menu">
-    <a href="/">Início</a>
-    <a href="/novo">Agendamentos</a>
-    <a href="/clientes">Clientes</a>
-    <a href="servicos.html">Serviços</a>
-    <a href="profissionais.html">Profissionais</a>
-    <a href="configuracoes.html">Configurações</a>
-    <a href="sobre.html">Sobre</a>
-    <a href="/clientes/novo">Novo Cliente</a>
-    <a href="/calendario">Calendário</a>
-  </nav>
-  <hr>
+  <header>
+    <nav class="nav-menu">
+      <a href="/">Agendamentos</a>
+      <a href="/clientes">Clientes</a>
+      <a href="/profissionais" class="ativo">Profissionais</a>
+      <a href="/sobre">Sobre</a>
+      <a href="/configuracoes">Configurações</a>
+    </nav>
+  </header>
+
   
   <h1>Serviços</h1>
   <p>Gerenciar serviços</p>
 </div>
-<script src="/app.js"></script>
+<script src="/app.js">
+    document.addEventListener("DOMContentLoaded", () => {
+    // Aplica o tema salvo em todas as páginas
+    if(localStorage.getItem("tema") === "dark") {
+      document.body.classList.add("dark");
+    }
+  });
+</script>
 </body>
 </html>

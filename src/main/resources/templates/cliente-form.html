@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <title>Novo Cliente</title>
     <link rel="stylesheet" href="/style.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          // Aplica o tema salvo em todas as páginas
+          if(localStorage.getItem("tema") === "dark") {
+            document.body.classList.add("dark");
+          }
+        });
+      </script>
 </head>
 <body>
 <h1>Cadastrar Cliente</h1>

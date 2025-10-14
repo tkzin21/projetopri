@@ -1,32 +1,35 @@
 <!doctype html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="utf-8">
   <title>Sobre · Agendaí</title>
   <link rel="stylesheet" href="/style.css">
 </head>
-
 <body>
-  <div class="container">
+  <header>
     <nav class="nav-menu">
-      <a href="/">Início</a>
-      <a href="/novo">Agendamentos</a>
+      <a href="/">Agendamentos</a>
       <a href="/clientes">Clientes</a>
-      <a href="servicos.html">Serviços</a>
-      <a href="profissionais.html">Profissionais</a>
-      <a href="configuracoes.html">Configurações</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="/clientes/novo">Novo Cliente</a>
-      <a href="/calendario">Calendário</a>
+      <a href="/profissionais" class="ativo">Profissionais</a>
+      <a href="/sobre">Sobre</a>
+      <a href="/configuracoes">Configurações</a>
     </nav>
-    <hr>
-    <h1>Sobre</h1>
-    <p>Sobre o sistema Agendaí</p>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta ratione eos officiis earum ullam corrupti ipsa
-      nam cumque, voluptates maiores quia minus odit fugit, vel aliquid ea dolorum deleniti tenetur!</p>
-  </div>
-  <script src="/app.js"></script>
-</body>
+  </header>
 
+
+  <main>
+    <h1>Sobre o Agendaí</h1>
+    <p>O <strong>Agendaí</strong> é um sistema simples e eficiente para gerenciamento de agendamentos.</p>
+
+    <p style="     bottom: 1px;
+    right: 1px;
+    position: fixed;">Versão 1.0 · Desenvolvido por <strong>Tiago Carvalho</strong> 💻</p>
+  </main>
+  <script>  document.addEventListener("DOMContentLoaded", () => {
+    // Aplica o tema salvo em todas as páginas
+    if(localStorage.getItem("tema") === "dark") {
+      document.body.classList.add("dark");
+    }
+  });</script>
+</body>
 </html>
