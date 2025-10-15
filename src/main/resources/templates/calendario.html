@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>Calendário - Agendaí</title>
@@ -7,63 +8,93 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <link rel="stylesheet" href="/style.css">
     <style>
-     
         /* Estilos para o modal */
         .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1; 
+            display: none;
+            position: fixed;
+            z-index: 1;
             left: 0;
             top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgb(0,0,0); 
-            background-color: rgba(0,0,0,0.4); 
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
         }
+
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto; 
+            margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%; 
+            width: 80%;
         }
+
         .close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
         }
+
         .close:hover,
         .close:focus {
             color: black;
             text-decoration: none;
             cursor: pointer;
         }
+
         .agendamento-item {
             border-bottom: 1px solid #ddd;
             padding: 10px 0;
         }
-        </style>
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-              // Aplica o tema salvo em todas as páginas
-              if(localStorage.getItem("tema") === "dark") {
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Aplica o tema salvo em todas as páginas
+            if (localStorage.getItem("tema") === "dark") {
                 document.body.classList.add("dark");
-              }
-            });
-          </script>
+            }
+        });
+    </script>
 </head>
+
 <body>
-    <header >
+    <header>
         <nav class="nav-menu">
-          <a href="/">Agendamentos</a>
-          <a href="/clientes">Clientes</a>
-          <a href="/profissionais" class="ativo">Profissionais</a>
-          <a href="/sobre">Sobre</a>
-          <a href="/configuracoes">Configurações</a>
+            <!-- Ícone de configurações -->
+            <div id="configIcon" style="position: fixed; top: 20px; right: 20px; z-index: 2000; cursor: pointer;">
+                ⚙️
+            </div>
+
+            <!-- Modal de Configurações -->
+            <div id="configModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeConfig">&times;</span>
+                    <h2>Configurações</h2>
+
+                    <!-- Conteúdo da aba de configurações -->
+                    <div class="config-section">
+                        <h3>Tema</h3>
+                        <label class="switch">
+                            <input type="checkbox" id="temaSwitch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="config-section">
+                        <h3>Outras opções</h3>
+                        <button class="btn-reset" id="resetBtn">Resetar tudo</button>
+                    </div>
+                </div>
+            </div>
+            <a href="/">Agendamentos</a>
+            <a href="/clientes">Clientes</a>
+            <a href="/profissionais" class="ativo">Profissionais</a>
+            <a href="/sobre">Sobre</a>
+            <a href="/configuracoes">Configurações</a>
         </nav>
-      </header>
+    </header>
     <h1 style="text-align:center;">Calendário de Agendamentos</h1>
     <div id="calendar"></div>
 
@@ -75,7 +106,7 @@
             <div id="modalAgendamentos"></div>
         </div>
     </div>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const calendarEl = document.getElementById('calendar');
@@ -88,20 +119,20 @@
                 initialView: 'dayGridMonth',
                 locale: 'pt-br',
                 events: '/api/agendamentos', // Backend já deve devolver {id, title, start, servico}
-                eventDidMount: function(info) {
+                eventDidMount: function (info) {
                     // Tooltip simples com o serviço
                     if (info.event.extendedProps.servico) {
                         info.el.setAttribute('title', info.event.extendedProps.servico);
                     }
 
                     // Clique no evento abre o modal
-                    info.el.addEventListener('click', function() {
+                    info.el.addEventListener('click', function () {
                         const dia = info.event.start.toLocaleDateString('pt-BR');
                         modalData.textContent = "Agendamentos de " + dia;
                         modalAgendamentos.innerHTML = "";
 
                         // Filtra todos eventos do mesmo dia
-                        const agsDoDia = calendar.getEvents().filter(a => 
+                        const agsDoDia = calendar.getEvents().filter(a =>
                             a.start.toDateString() === info.event.start.toDateString()
                         );
 
@@ -109,7 +140,7 @@
                             const div = document.createElement('div');
                             div.classList.add('agendamento-item');
                             div.innerHTML = `<strong>${a.title}</strong> - ${a.extendedProps.servico || ""} 
-                                             (${a.start.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})})`;
+                                             (${a.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })})`;
                             modalAgendamentos.appendChild(div);
                         });
 
@@ -121,22 +152,23 @@
             calendar.render();
 
             // Fechar modal
-            modalClose.onclick = function() {
+            modalClose.onclick = function () {
                 modal.style.display = "none";
             };
-            window.onclick = function(event) {
+            window.onclick = function (event) {
                 if (event.target == modal) {
                     modal.style.display = "none";
                 }
             };
         });
         document.addEventListener("DOMContentLoaded", () => {
-    // Aplica o tema salvo em todas as páginas
-    if(localStorage.getItem("tema") === "dark") {
-      document.body.classList.add("dark");
-    }
-  });
-  
+            // Aplica o tema salvo em todas as páginas
+            if (localStorage.getItem("tema") === "dark") {
+                document.body.classList.add("dark");
+            }
+        });
+
     </script>
 </body>
+
 </html>

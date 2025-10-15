@@ -1,34 +1,63 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="utf-8">
   <title>Serviços · Agendaí</title>
   <link rel="stylesheet" href="/style.css">
 </head>
-<body>
-<div class="container">
-  
-  <header>
-    <nav class="nav-menu">
-      <a href="/">Agendamentos</a>
-      <a href="/clientes">Clientes</a>
-      <a href="/profissionais" class="ativo">Profissionais</a>
-      <a href="/sobre">Sobre</a>
-      <a href="/configuracoes">Configurações</a>
-    </nav>
-  </header>
 
-  
-  <h1>Serviços</h1>
-  <p>Gerenciar serviços</p>
-</div>
-<script src="/app.js">
+<body>
+  <div class="container">
+
+    <header>
+      <nav class="nav-menu">
+        <!-- Ícone de configurações -->
+        <div id="configIcon" style="position: fixed; top: 20px; right: 20px; z-index: 2000; cursor: pointer;">
+          ⚙️
+        </div>
+
+        <!-- Modal de Configurações -->
+        <div id="configModal" class="modal">
+          <div class="modal-content">
+            <span class="close" id="closeConfig">&times;</span>
+            <h2>Configurações</h2>
+
+            <!-- Conteúdo da aba de configurações -->
+            <div class="config-section">
+              <h3>Tema</h3>
+              <label class="switch">
+                <input type="checkbox" id="temaSwitch">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="config-section">
+              <h3>Outras opções</h3>
+              <button class="btn-reset" id="resetBtn">Resetar tudo</button>
+            </div>
+          </div>
+        </div>
+        <a href="/">Agendamentos</a>
+        <a href="/clientes">Clientes</a>
+        <a href="/profissionais" class="ativo">Profissionais</a>
+        <a href="/sobre">Sobre</a>
+        <a href="/configuracoes">Configurações</a>
+      </nav>
+    </header>
+
+
+    <h1>Serviços</h1>
+    <p>Gerenciar serviços</p>
+  </div>
+  <script src="/app.js">
     document.addEventListener("DOMContentLoaded", () => {
-    // Aplica o tema salvo em todas as páginas
-    if(localStorage.getItem("tema") === "dark") {
-      document.body.classList.add("dark");
-    }
-  });
-</script>
+      // Aplica o tema salvo em todas as páginas
+      if (localStorage.getItem("tema") === "dark") {
+        document.body.classList.add("dark");
+      }
+    });
+  </script>
 </body>
+
 </html>

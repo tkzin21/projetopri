@@ -1,86 +1,141 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Clientes · Agendaí</title>
     <link rel="stylesheet" href="/style.css">
     <style>
         /* Modal */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
-        .modal-conteudo { background-color: #fefefe; margin: 10% auto; padding: 20px; border-radius: 8px; width: 400px; position: relative; }
-        .fechar { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-conteudo {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            position: relative;
+        }
+
+        .fechar {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
     </style>
 
 </head>
+
 <body>
     <header>
         <nav class="nav-menu">
-          <a href="/">Agendamentos</a>
-          <a href="/clientes">Clientes</a>
-          <a href="/profissionais" class="ativo">Profissionais</a>
-          <a href="/sobre">Sobre</a>
-          <a href="/configuracoes">Configurações</a>
+            <!-- Ícone de configurações -->
+            <div id="configIcon" style="position: fixed; top: 20px; right: 20px; z-index: 2000; cursor: pointer;">
+                ⚙️
+            </div>
+
+            <!-- Modal de Configurações -->
+            <div id="configModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeConfig">&times;</span>
+                    <h2>Configurações</h2>
+
+                    <!-- Conteúdo da aba de configurações -->
+                    <div class="config-section">
+                        <h3>Tema</h3>
+                        <label class="switch">
+                            <input type="checkbox" id="temaSwitch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="config-section">
+                        <h3>Outras opções</h3>
+                        <button class="btn-reset" id="resetBtn">Resetar tudo</button>
+                    </div>
+                </div>
+            </div>
+            <a href="/">Agendamentos</a>
+            <a href="/clientes">Clientes</a>
+            <a href="/profissionais" class="ativo">Profissionais</a>
+            <a href="/sobre">Sobre</a>
+            <a href="/configuracoes">Configurações</a>
         </nav>
-      </header>
-<div class="container">
+    </header>
+    <div class="container">
 
-    <h1>Clientes</h1>
-    <p>Total de clientes: <span th:text="${clientes.size()}"></span></p>
-    <button id="abrirModal">Novo Cliente</button>
+        <h1>Clientes</h1>
+        <p>Total de clientes: <span th:text="${clientes.size()}"></span></p>
+        <button id="abrirModal">Novo Cliente</button>
 
-    <!-- Lista de clientes -->
-    <table border="1">
-        <thead>
-        <tr>
-            <th>ID</th><th>Nome</th><th>Telefone</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="cliente : ${clientes}">
-            <td th:text="${cliente.id}"></td>
-            <td th:text="${cliente.nome}"></td>
-            <td th:text="${cliente.telefone}"></td>
-        </tr>
-        </tbody>
-    </table>
+        <!-- Lista de clientes -->
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cliente : ${clientes}">
+                    <td th:text="${cliente.id}"></td>
+                    <td th:text="${cliente.nome}"></td>
+                    <td th:text="${cliente.telefone}"></td>
+                </tr>
+            </tbody>
+        </table>
 
-    <!-- Modal -->
-    <div id="modalCliente" class="modal ">
-        <div class="modal-content">
-            <span class="fechar">&times;</span>
-            <h2>Cadastrar Cliente</h2>
-            <form th:action="@{/clientes}" th:object="${novoCliente}" method="post">
-                <label>Nome:</label><br>
-                <input type="text" th:field="*{nome}" required /><br><br>
-                <label>Telefone:</label><br>
-                <input type="text" th:field="*{telefone}" required /><br><br>
-                <button type="submit">Salvar</button>
-            </form>
+        <!-- Modal -->
+        <div id="modalCliente" class="modal ">
+            <div class="modal-content">
+                <span class="fechar">&times;</span>
+                <h2>Cadastrar Cliente</h2>
+                <form th:action="@{/clientes}" th:object="${novoCliente}" method="post">
+                    <label>Nome:</label><br>
+                    <input type="text" th:field="*{nome}" required /><br><br>
+                    <label>Telefone:</label><br>
+                    <input type="text" th:field="*{telefone}" required /><br><br>
+                    <button type="submit">Salvar</button>
+                </form>
+            </div>
         </div>
+
     </div>
 
-</div>
+    <script>
+        const modal = document.getElementById("modalCliente");
+        const btn = document.getElementById("abrirModal");
+        const span = document.querySelector(".fechar");
 
-<script>
-    const modal = document.getElementById("modalCliente");
-    const btn = document.getElementById("abrirModal");
-    const span = document.querySelector(".fechar");
-
-    btn.onclick = () => modal.style.display = "block";
-    span.onclick = () => modal.style.display = "none";
-    window.onclick = (event) => { if(event.target === modal) modal.style.display = "none"; }
-    document.addEventListener("DOMContentLoaded", () => {
-    // Aplica o tema salvo em todas as páginas
-    if(localStorage.getItem("tema") === "dark") {
-      document.body.classList.add("dark");
-    }
-  });
-  document.addEventListener("DOMContentLoaded", () => {
-    // Aplica o tema salvo em todas as páginas
-    if(localStorage.getItem("tema") === "dark") {
-      document.body.classList.add("dark");
-    }
-  });
-</script>
+        btn.onclick = () => modal.style.display = "block";
+        span.onclick = () => modal.style.display = "none";
+        window.onclick = (event) => { if (event.target === modal) modal.style.display = "none"; }
+        document.addEventListener("DOMContentLoaded", () => {
+            // Aplica o tema salvo em todas as páginas
+            if (localStorage.getItem("tema") === "dark") {
+                document.body.classList.add("dark");
+            }
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            // Aplica o tema salvo em todas as páginas
+            if (localStorage.getItem("tema") === "dark") {
+                document.body.classList.add("dark");
+            }
+        });
+    </script>
 </body>
+
 </html>

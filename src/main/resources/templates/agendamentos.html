@@ -7,14 +7,41 @@
   <link rel="stylesheet" href="/style.css">
   <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
-  
+
 </head>
 
 <body>
   <div class="container">
 
     <header>
-      <nav  class="nav-menu">
+
+      <nav class="nav-menu">
+        <!-- Ícone de configurações -->
+        <div id="configIcon" style="position: fixed; top: 20px; right: 20px; z-index: 2000; cursor: pointer;">
+          ⚙️
+        </div>
+
+        <!-- Modal de Configurações -->
+        <div id="configModal" class="modal">
+          <div class="modal-content">
+            <span class="close" id="closeConfig">&times;</span>
+            <h2>Configurações</h2>
+
+            <!-- Conteúdo da aba de configurações -->
+            <div class="config-section">
+              <h3>Tema</h3>
+              <label class="switch">
+                <input type="checkbox" id="temaSwitch">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="config-section">
+              <h3>Outras opções</h3>
+              <button class="btn-reset" id="resetBtn">Resetar tudo</button>
+            </div>
+          </div>
+        </div>
         <a href="/">Agendamentos</a>
         <a href="/clientes">Clientes</a>
         <a href="/profissionais" class="ativo">Profissionais</a>
@@ -34,43 +61,41 @@
           <label for="cliente">Cliente:</label>
           <select id="cliente" name="cliente" required>
             <option value="" disabled selected>Selecione um cliente</option>
-            <option th:each="c : ${todosClientes}" 
-                    th:value="${c.id}" 
-                    th:text="${c.nome}" 
-                    th:data-contato="${c.telefone}">
+            <option th:each="c : ${todosClientes}" th:value="${c.id}" th:text="${c.nome}"
+              th:data-contato="${c.telefone}">
             </option>
           </select><br>
-          
+
           <!-- Contato preenchido automaticamente -->
           <label for="contato">Contato:</label>
           <input type="text" id="contato" name="contato" readonly><br>
-        
+
           <!-- Data e hora -->
           <label for="dataHora">Data e Hora:</label>
           <input type="datetime-local" id="dataHora" name="dataHora" required><br>
-        
+
           <!-- Observação -->
           <label for="observacao">Observação:</label>
           <textarea id="observacao" name="observacao"></textarea><br>
-        
+
           <!-- Botão de envio -->
           <button type="submit">Agendar</button>
         </form>
-        
+
         <!-- Mensagens de erro ou sucesso -->
         <div th:if="${erro}">
           <p style="color: red;" th:text="${erro}"></p>
         </div>
         <div th:if="${sucesso}">
           <p style="color: green;" th:text="${sucesso}"></p>
-        </div>  
+        </div>
 
         <!-- Lista de agendamentos existentes -->
         <h2>Agendamentos existentes</h2>
-  
+
         <ul>
           <li th:each="agendamento : ${agendamentos}">
-            <span th:text="${agendamento.nomeCliente}"></span> - 
+            <span th:text="${agendamento.nomeCliente}"></span> -
             <span th:text="${#temporals.format(agendamento.dataHora, 'dd/MM/yyyy HH:mm')}"></span>
           </li>
         </ul>
@@ -157,12 +182,12 @@
         };
       });
       document.addEventListener("DOMContentLoaded", () => {
-    // Aplica o tema salvo em todas as páginas
-    if(localStorage.getItem("tema") === "dark") {
-      document.body.classList.add("dark");
-    }
-  });
-  
+        // Aplica o tema salvo em todas as páginas
+        if (localStorage.getItem("tema") === "dark") {
+          document.body.classList.add("dark");
+        }
+      });
+
     </script>
 </body>
 
