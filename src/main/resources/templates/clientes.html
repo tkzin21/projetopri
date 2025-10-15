@@ -71,7 +71,7 @@
             <a href="/clientes">Clientes</a>
             <a href="/profissionais" class="ativo">Profissionais</a>
             <a href="/sobre">Sobre</a>
-            <a href="/configuracoes">Configurações</a>
+           
         </nav>
     </header>
     <div class="container">
@@ -116,26 +116,50 @@
     </div>
 
     <script>
-        const modal = document.getElementById("modalCliente");
-        const btn = document.getElementById("abrirModal");
-        const span = document.querySelector(".fechar");
-
-        btn.onclick = () => modal.style.display = "block";
-        span.onclick = () => modal.style.display = "none";
-        window.onclick = (event) => { if (event.target === modal) modal.style.display = "none"; }
         document.addEventListener("DOMContentLoaded", () => {
-            // Aplica o tema salvo em todas as páginas
-            if (localStorage.getItem("tema") === "dark") {
-                document.body.classList.add("dark");
-            }
+          // Aplica o tema salvo
+          if (localStorage.getItem("tema") === "dark") {
+            document.body.classList.add("dark");
+          }
+        
+          // Modal de Configurações
+          const configIcon = document.getElementById("configIcon");
+          const configModal = document.getElementById("configModal");
+          const closeConfig = document.getElementById("closeConfig");
+        
+          if(configIcon && configModal && closeConfig){
+            // Abre o modal
+            configIcon.addEventListener("click", () => {
+              configModal.style.display = "block";
+            });
+        
+            // Fecha ao clicar no X
+            closeConfig.addEventListener("click", () => {
+              configModal.style.display = "none";
+            });
+        
+            // Fecha ao clicar fora do modal
+            window.addEventListener("click", (e) => {
+              if(e.target === configModal){
+                configModal.style.display = "none";
+              }
+            });
+          }
+        
+          // Tema dark/light
+          const temaSwitch = document.getElementById("temaSwitch");
+          if(temaSwitch){
+            // Inicializa checkbox
+            temaSwitch.checked = document.body.classList.contains("dark");
+        
+            temaSwitch.addEventListener("change", () => {
+              document.body.classList.toggle("dark");
+              localStorage.setItem("tema", document.body.classList.contains("dark") ? "dark" : "light");
+            });
+          }
         });
-        document.addEventListener("DOMContentLoaded", () => {
-            // Aplica o tema salvo em todas as páginas
-            if (localStorage.getItem("tema") === "dark") {
-                document.body.classList.add("dark");
-            }
-        });
-    </script>
+        </script>
+        
 </body>
 
 </html>
