@@ -16,7 +16,7 @@
     <header>
 
       <nav class="nav-menu">
-          
+
         <!-- Ícone de configurações -->
         <div id="configIcon" style="position: fixed; top: 20px; right: 20px; z-index: 2000; cursor: pointer;">
           ⚙️
@@ -47,7 +47,7 @@
         <a href="/clientes">Clientes</a>
         <a href="/profissionais" class="ativo">Profissionais</a>
         <a href="/sobre">Sobre</a>
-      
+
       </nav>
     </header>
 
@@ -56,50 +56,74 @@
     <div class="agendamentos-section">
       <div class="new-agendamento">
 
-        <form th:action="@{/agendar}" method="post">
 
-          <!-- Cliente -->
+        <!-- Mensagens de erro ou sucesso -->
+        <div th:if="${erro}" style="color: red;">
+          <p th:text="${erro}"></p>
+        </div>
+        <div th:if="${sucesso}" style="color: green;">
+          <p th:text="${sucesso}"></p>
+        </div>
+
+        <!-- Formulário de agendamento -->
+        <form th:action="@{/agendar}" th:object="${novoAgendamento}" method="post">
+
           <label for="cliente">Cliente:</label>
-          <select id="cliente" name="cliente" required>
+          <select th:field="*{cliente}" name="cliente" required>
             <option value="" disabled selected>Selecione um cliente</option>
-            <option th:each="c : ${todosClientes}" th:value="${c.id}" th:text="${c.nome}"
-              th:data-contato="${c.telefone}">
+            <option th:each="cli : ${todosClientes}" th:value="${cli.id}" th:text="${cli.nome}">
             </option>
-          </select><br>
+          </select>
+          <br><br>
 
-          <!-- Contato preenchido automaticamente -->
-          <label for="contato">Contato:</label>
-          <input type="text" id="contato" name="contato" readonly><br>
+          <label for="profissional">Profissional:</label>
+          <select th:field="*{profissional}" name="profissional" required>
+            <option value="" disabled selected>Selecione um profissional</option>
+            <option th:each="prof : ${todosProfissionais}" th:value="${prof.id}" th:text="${prof.nome}">
+            </option>
+          </select>
+          <br><br>
 
-          <!-- Data e hora -->
-          <label for="dataHora">Data e Hora:</label>
-          <input type="datetime-local" id="dataHora" name="dataHora" required><br>
+          <label for="dataHora">Data e hora:</label>
+          <input type="datetime-local" th:field="*{dataHora}" required>
+          <br><br>
 
-          <!-- Observação -->
+          <label for="duracao">Duração (minutos):</label>
+          <input type="number" th:field="*{duracao}" min="1" required>
+          <br><br>
+
           <label for="observacao">Observação:</label>
-          <textarea id="observacao" name="observacao"></textarea><br>
+          <input type="text" th:field="*{observacao}">
+          <br><br>
 
-          <!-- Botão de envio -->
           <button type="submit">Agendar</button>
         </form>
 
-        <!-- Mensagens de erro ou sucesso -->
-        <div th:if="${erro}">
-          <p style="color: red;" th:text="${erro}"></p>
-        </div>
-        <div th:if="${sucesso}">
-          <p style="color: green;" th:text="${sucesso}"></p>
-        </div>
+        <hr>
 
-        <!-- Lista de agendamentos existentes -->
-        <h2>Agendamentos existentes</h2>
-
-        <ul>
-          <li th:each="agendamento : ${agendamentos}">
-            <span th:text="${agendamento.nomeCliente}"></span> -
-            <span th:text="${#temporals.format(agendamento.dataHora, 'dd/MM/yyyy HH:mm')}"></span>
-          </li>
-        </ul>
+        <h2>Lista de Agendamentos</h2>
+        <table border="1">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Profissional</th>
+              <th>Data/Hora</th>
+              <th>Duração</th>
+              <th>Observação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="ag : ${agendamentos}">
+              <td th:text="${ag.id}"></td>
+              <td th:text="${ag.cliente != null ? ag.cliente.nome : 'Sem cliente'}"></td>
+              <td th:text="${ag.profissional != null ? ag.profissional.nome : 'Sem profissional'}"></td>
+              <td th:text="${ag.dataHora != null ? #temporals.format(ag.dataHora, 'dd/MM/yyyy HH:mm') : ''}"></td>
+              <td th:text="${ag.duracao != null ? ag.duracao : ''}"></td>
+              <td th:text="${ag.observacao != null ? ag.observacao : ''}"></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div class="calendar-section">
@@ -142,11 +166,12 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
           locale: 'pt-br',
-          events: '/api/agendamentos',
+          events: '/api/agendamentos', // usa o endpoint que criamos
           dayMaxEvents: true,
           eventDidMount: function (info) {
-            if (info.event.extendedProps.servico) {
-              info.el.setAttribute('title', info.event.extendedProps.servico);
+            // título do tooltip
+            if (info.event.extendedProps.profissional) {
+              info.el.setAttribute('title', `Profissional: ${info.event.extendedProps.profissional}`);
             }
 
             info.el.addEventListener('click', function () {
@@ -161,7 +186,7 @@
               agsDoDia.forEach(a => {
                 const div = document.createElement('div');
                 div.classList.add('agendamento-item');
-                div.innerHTML = `<strong>${a.title}</strong> - ${a.extendedProps.servico || ""} 
+                div.innerHTML = `<strong>${a.title}</strong> - Profissional: ${a.extendedProps.profissional} 
                                  (${a.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })})`;
                 modalAgendamentos.appendChild(div);
               });

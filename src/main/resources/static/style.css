@@ -79,7 +79,7 @@ form input, form select {
   border-radius: 6px;
 }
 
-form button {
+form button,button {
   padding: 10px 20px;
   background-color: #2ecc71;
   color: white;
@@ -360,11 +360,14 @@ body.dark form select {
   border: 1px solid #555;
 }
 
-body.dark form button {
-  background-color: #2196F3;
+body.dark form button,button {
+ background-color: #2196F3;
   color: white;
 }
-
+.button{
+    background-color: #2196F3;
+  color: white;
+}
 body.dark .btn-reset {
   background-color: #c0392b;
   color: #f5f5f5;
