@@ -168,6 +168,9 @@
           locale: 'pt-br',
           events: '/api/agendamentos', // usa o endpoint que criamos
           dayMaxEvents: true,
+          moreLinkContent: function (arg) {
+            return "+" + arg.num; // só mostra "+2", "+3" etc.
+          },
           eventDidMount: function (info) {
             // título do tooltip
             if (info.event.extendedProps.profissional) {
