@@ -223,8 +223,38 @@
         if (localStorage.getItem("tema") === "dark") {
           document.body.classList.add("dark");
         }
-      });
+        // Observador para detectar quando o popover é adicionado
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+            if (node.classList && node.classList.contains('fc-more-popover')) {
+                if (document.body.classList.contains('dark-mode')) {
+                    node.style.backgroundColor = '#1e1e1e';
+                    node.style.color = '#f0f0f0';
+                    node.style.border = '1px solid #333';
+                    node.querySelectorAll('.fc-event').forEach(ev => {
+                        ev.style.backgroundColor = '#333';
+                        ev.style.color = '#fff';
+                    });
+                } else {
+                    // volta ao padrão caso não seja dark
+                    node.style.backgroundColor = '';
+                    node.style.color = '';
+                    node.style.border = '';
+                    node.querySelectorAll('.fc-event').forEach(ev => {
+                        ev.style.backgroundColor = '';
+                        ev.style.color = '';
+                    });
+                }
+            }
+        });
+    });
+});
 
+// Começa a observar o body por adição de elementos
+observer.observe(document.body, { childList: true, subtree: true });
+      });
+      
     </script>
 </body>
 
