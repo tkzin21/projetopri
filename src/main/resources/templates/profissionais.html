@@ -11,9 +11,7 @@
   <header>
     <nav class="nav-menu">
       <!-- Ícone de configurações -->
-      <div id="configIcon" style="position: fixed; top: 20px; right: 20px; z-index: 2000; cursor: pointer;">
-        ⚙️
-      </div>
+
 
       <!-- Modal de Configurações -->
       <div id="configModal" class="modal">
@@ -40,7 +38,7 @@
       <a href="/clientes">Clientes</a>
       <a href="/profissionais" class="ativo">Profissionais</a>
       <a href="/sobre">Sobre</a>
-      
+
     </nav>
   </header>
 
@@ -71,104 +69,126 @@
           <td th:text="${p.especialidade}"></td>
           <td th:text="${p.telefone}"></td>
           <td>
-            <a th:href="@{'/profissionais/editar/' + ${p.id}}">Editar</a> |
+            <a th:href="@{'/profissionais/editar/' + ${p.id}}">✏️Editar</a> |
             <a th:href="@{'/profissionais/excluir/' + ${p.id}}"
-              onclick="return confirm('Deseja realmente excluir?')">Excluir</a>
+              onclick="return confirm('Deseja realmente excluir?')">🗑️Excluir</a>
           </td>
         </tr>
       </tbody>
     </table>
   </main>
+  <div id="modalBloqueioProfissional" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" id="fecharBloqueio">&times;</span>
+      <h2>Não é possível excluir</h2>
+      <p>Este profissional possui agendamentos ativos e não pode ser excluído.</p>
+    </div>
+  </div>
+  <script src="/app.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       // Aplica o tema salvo
       if (localStorage.getItem("tema") === "dark") {
         document.body.classList.add("dark");
       }
-    
+
       // Modal de Configurações
       const configIcon = document.getElementById("configIcon");
       const configModal = document.getElementById("configModal");
       const closeConfig = document.getElementById("closeConfig");
-    
-      if(configIcon && configModal && closeConfig){
+
+      if (configIcon && configModal && closeConfig) {
         // Abre o modal
         configIcon.addEventListener("click", () => {
           configModal.style.display = "block";
         });
-    
+
         // Fecha ao clicar no X
         closeConfig.addEventListener("click", () => {
           configModal.style.display = "none";
         });
-    
+
         // Fecha ao clicar fora do modal
         window.addEventListener("click", (e) => {
-          if(e.target === configModal){
+          if (e.target === configModal) {
             configModal.style.display = "none";
           }
         });
       }
-    
+
       // Tema dark/light
       const temaSwitch = document.getElementById("temaSwitch");
-      if(temaSwitch){
+      if (temaSwitch) {
         // Inicializa checkbox
         temaSwitch.checked = document.body.classList.contains("dark");
-    
+
         temaSwitch.addEventListener("change", () => {
           document.body.classList.toggle("dark");
           localStorage.setItem("tema", document.body.classList.contains("dark") ? "dark" : "light");
         });
       }
     });
-    </script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        // Aplica o tema salvo
-        if (localStorage.getItem("tema") === "dark") {
-          document.body.classList.add("dark");
-        }
-      
-        // Modal de Configurações
-        const configIcon = document.getElementById("configIcon");
-        const configModal = document.getElementById("configModal");
-        const closeConfig = document.getElementById("closeConfig");
-      
-        if(configIcon && configModal && closeConfig){
-          // Abre o modal
-          configIcon.addEventListener("click", () => {
-            configModal.style.display = "block";
-          });
-      
-          // Fecha ao clicar no X
-          closeConfig.addEventListener("click", () => {
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Aplica o tema salvo
+      if (localStorage.getItem("tema") === "dark") {
+        document.body.classList.add("dark");
+      }
+
+      // Modal de Configurações
+      const configIcon = document.getElementById("configIcon");
+      const configModal = document.getElementById("configModal");
+      const closeConfig = document.getElementById("closeConfig");
+
+      if (configIcon && configModal && closeConfig) {
+        // Abre o modal
+        configIcon.addEventListener("click", () => {
+          configModal.style.display = "block";
+        });
+
+        // Fecha ao clicar no X
+        closeConfig.addEventListener("click", () => {
+          configModal.style.display = "none";
+        });
+
+        // Fecha ao clicar fora do modal
+        window.addEventListener("click", (e) => {
+          if (e.target === configModal) {
             configModal.style.display = "none";
-          });
-      
-          // Fecha ao clicar fora do modal
-          window.addEventListener("click", (e) => {
-            if(e.target === configModal){
-              configModal.style.display = "none";
-            }
-          });
-        }
-      
-        // Tema dark/light
-        const temaSwitch = document.getElementById("temaSwitch");
-        if(temaSwitch){
-          // Inicializa checkbox
-          temaSwitch.checked = document.body.classList.contains("dark");
-      
-          temaSwitch.addEventListener("change", () => {
-            document.body.classList.toggle("dark");
-            localStorage.setItem("tema", document.body.classList.contains("dark") ? "dark" : "light");
-          });
-        }
-      });
-      </script>
-      
-    
+          }
+        });
+      }
+
+      // Tema dark/light
+      const temaSwitch = document.getElementById("temaSwitch");
+      if (temaSwitch) {
+        // Inicializa checkbox
+        temaSwitch.checked = document.body.classList.contains("dark");
+
+        temaSwitch.addEventListener("change", () => {
+          document.body.classList.toggle("dark");
+          localStorage.setItem("tema", document.body.classList.contains("dark") ? "dark" : "light");
+        });
+      }
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+      const modal = document.getElementById("modalBloqueioProfissional");
+      const fechar = document.getElementById("fecharBloqueio");
+
+      // Thymeleaf coloca esse valor como boolean
+      const bloqueado = /*[[${profissionalBloqueado}]]*/ false;
+
+      if (bloqueado) {
+        modal.style.display = "block";
+      }
+
+      fechar.onclick = () => modal.style.display = "none";
+      window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+    });
+  </script>
+
+
 </body>
 
 </html>

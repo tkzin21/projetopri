@@ -67,4 +67,16 @@ public class AgendamentoService {
     public List<Profissional> listarProfissionais() {
         return profissionalRepository.findAll();
     }
+     // apagar agendamento por ID
+     public void deleteById(Long id) {
+        agendamentoRepository.deleteById(id);
+    }
+     // Apaga todos os agendamentos
+     public void deleteAll() {
+        agendamentoRepository.deleteAll();
+    }
+      // Lista todos os agendamentos
+      public List<Agendamento> findAll() {
+        return agendamentoRepository.findAll();
+    }
 }

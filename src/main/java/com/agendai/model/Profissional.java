@@ -15,7 +15,7 @@ public class Profissional {
     private String nome;
     private String especialidade;
     private String telefone;
-
+    
     // Getters e Setters
     public Long getId() {
         return id;
@@ -48,4 +48,5 @@ public class Profissional {
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
+    
 }

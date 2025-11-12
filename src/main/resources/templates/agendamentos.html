@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head>
   <meta charset="utf-8">
@@ -7,36 +7,24 @@
   <link rel="stylesheet" href="/style.css">
   <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
-
 </head>
 
 <body>
 
-    <div class="logo">
-      <a href="/">
-        
-      </a>
-    </div>
-
-
   <div class="container">
 
     <header>
-
       <nav class="nav-menu">
 
-        <!-- Ícone de configurações -->
         <div id="configIcon" style="position: fixed; top: 20px; right: 20px; z-index: 2000; cursor: pointer;">
           ⚙️
         </div>
-
         <!-- Modal de Configurações -->
         <div id="configModal" class="modal">
           <div class="modal-content">
             <span class="close" id="closeConfig">&times;</span>
             <h2>Configurações</h2>
 
-            <!-- Conteúdo da aba de configurações -->
             <div class="config-section">
               <h3>Tema</h3>
               <label class="switch">
@@ -47,48 +35,54 @@
 
             <div class="config-section">
               <h3>Outras opções</h3>
-              <button class="btn-reset" id="resetBtn">Resetar tudo</button>
+
+              <div style="display: flex; gap: 10px;">
+                <button class="btn-reset" id="resetarTudo">Resetar tudo</button>
+
+                <form th:action="@{/agendamento/limpar}" method="post" onsubmit="return senhaAdmin(this);">
+                  <button type="submit">Limpar todos os agendamentos</button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
-        <a href="/">Agendamentos</a>
-        <a href="/clientes">Clientes</a>
-        <a href="/profissionais" class="ativo">Profissionais</a>
-        <a href="/sobre">Sobre</a>
 
+        <a href="/" class="ativo">Agendamentos</a>
+        <a href="/clientes">Clientes</a>
+        <a href="/profissionais">Profissionais</a>
+        <a href="/sobre">Sobre</a>
       </nav>
     </header>
 
     <h1>Agendamentos</h1>
+    <!-- Mensagem de erro (flash) -->
+    <div th:if="${erro}" style="color:red;">
+      <p th:text="${erro}"></p>
+    </div>
 
+    <!-- Mensagem de sucesso (flash) -->
+    <div th:if="${sucesso}" style="color:green;">
+      <p th:text="${sucesso}"></p>
+    </div>
     <div class="agendamentos-section">
+
+
+
+      <!-- Formulário de novo agendamento -->
       <div class="new-agendamento">
-
-
-        <!-- Mensagens de erro ou sucesso -->
-        <div th:if="${erro}" style="color: red;">
-          <p th:text="${erro}"></p>
-        </div>
-        <div th:if="${sucesso}" style="color: green;">
-          <p th:text="${sucesso}"></p>
-        </div>
-
-        <!-- Formulário de agendamento -->
         <form th:action="@{/agendar}" th:object="${novoAgendamento}" method="post">
 
           <label for="cliente">Cliente:</label>
-          <select th:field="*{cliente}" name="cliente" required>
+          <select id="cliente" th:field="*{cliente}" name="cliente" required>
             <option value="" disabled selected>Selecione um cliente</option>
-            <option th:each="cli : ${todosClientes}" th:value="${cli.id}" th:text="${cli.nome}">
-            </option>
+            <option th:each="cli : ${todosClientes}" th:value="${cli.id}" th:text="${cli.nome}"></option>
           </select>
           <br><br>
 
           <label for="profissional">Profissional:</label>
-          <select th:field="*{profissional}" name="profissional" required>
+          <select id="profissional" th:field="*{profissional}" name="profissional" required>
             <option value="" disabled selected>Selecione um profissional</option>
-            <option th:each="prof : ${todosProfissionais}" th:value="${prof.id}" th:text="${prof.nome}">
-            </option>
+            <option th:each="prof : ${todosProfissionais}" th:value="${prof.id}" th:text="${prof.nome}"></option>
           </select>
           <br><br>
 
@@ -101,14 +95,15 @@
           <br><br>
 
           <label for="observacao">Observação:</label>
-          <input type="text" th:field="*{observacao}">
-          <br><br>
-
+<textarea th:field="*{observacao}" maxlength="255" rows="4"
+          style="width: 100%; resize: vertical;" placeholder="descrição"></textarea>
+<br><br>
           <button type="submit">Agendar</button>
         </form>
 
         <hr>
 
+        <!-- Tabela de agendamentos -->
         <h2>Lista de Agendamentos</h2>
         <table border="1">
           <thead>
@@ -119,6 +114,7 @@
               <th>Data/Hora</th>
               <th>Duração</th>
               <th>Observação</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -129,18 +125,25 @@
               <td th:text="${ag.dataHora != null ? #temporals.format(ag.dataHora, 'dd/MM/yyyy HH:mm') : ''}"></td>
               <td th:text="${ag.duracao != null ? ag.duracao : ''}"></td>
               <td th:text="${ag.observacao != null ? ag.observacao : ''}"></td>
+              <td>
+                <form th:action="@{/agendamento/apagar/{id}(id=${ag.id})}" method="post"
+                  onsubmit="return confirm('Tem certeza que deseja apagar este agendamento?');">
+                  <button type="submit">Apagar</button>
+                </form>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
 
+      <!-- Calendário -->
       <div class="calendar-section">
         <h1 style="text-align:center; border: #2c3e50 1px solid; padding: 15px; border-radius: 8px; margin: 1px 0px;">
           Calendário de Agendamentos
         </h1>
         <div id="calendar"></div>
 
-        <!-- Modal -->
+        <!-- Modal detalhes -->
         <div id="detalhesModal" class="modal">
           <div class="modal-content">
             <span class="close" id="modalClose">&times;</span>
@@ -150,21 +153,27 @@
         </div>
       </div>
     </div>
-
     <script src="/app.js"></script>
     <script>
-      // Preenchimento automático do contato
-      const selectCliente = document.getElementById('cliente');
-      const inputContato = document.getElementById('contato');
+      // Função senhaAdmin segura
+      function senhaAdmin(form) {
+        const senha = prompt("Insira a senha de administrador:");
+        if (!senha) return false;
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "senha";
+        input.value = senha;
+        form.appendChild(input);
+        return true;
+      }
 
-      selectCliente.addEventListener('change', function () {
-        const optionSelecionada = selectCliente.options[selectCliente.selectedIndex];
-        const contato = optionSelecionada.getAttribute('data-contato');
-        inputContato.value = contato || '';
-      });
-
-      // FullCalendar + Modal
       document.addEventListener('DOMContentLoaded', function () {
+        // Aplica tema
+        if (localStorage.getItem("tema") === "dark") {
+          document.body.classList.add("dark");
+        }
+
+        // Inicializa FullCalendar
         const calendarEl = document.getElementById('calendar');
         const modal = document.getElementById('detalhesModal');
         const modalClose = document.getElementById('modalClose');
@@ -174,18 +183,14 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
           locale: 'pt-br',
-          events: '/api/agendamentos', // usa o endpoint que criamos
+          events: '/api/agendamentos',
           dayMaxEvents: true,
-          moreLinkContent: function (arg) {
-            return "+" + arg.num; // só mostra "+2", "+3" etc.
-          },
-          eventDidMount: function (info) {
-            // título do tooltip
-            if (info.event.extendedProps.profissional) {
+          moreLinkContent: arg => "+" + arg.num,
+          eventDidMount: info => {
+            if (info.event.extendedProps.profissional)
               info.el.setAttribute('title', `Profissional: ${info.event.extendedProps.profissional}`);
-            }
 
-            info.el.addEventListener('click', function () {
+            info.el.addEventListener('click', () => {
               const dia = info.event.start.toLocaleDateString('pt-BR');
               modalData.textContent = "Agendamentos de " + dia;
               modalAgendamentos.innerHTML = "";
@@ -209,23 +214,17 @@
 
         calendar.render();
 
-        modalClose.onclick = function () {
-          modal.style.display = "none";
-        };
-        window.onclick = function (event) {
-          if (event.target == modal) {
-            modal.style.display = "none";
-          }
-        };
-      });
-      document.addEventListener("DOMContentLoaded", () => {
-        // Aplica o tema salvo em todas as páginas
-        if (localStorage.getItem("tema") === "dark") {
-          document.body.classList.add("dark");
-        }
-      });
+        modalClose.onclick = () => modal.style.display = "none";
+        window.onclick = event => { if (event.target == modal) modal.style.display = "none"; };
 
+        // Resetar configurações
+        const btnReset = document.getElementById("resetarTudo");
+        if (btnReset) btnReset.addEventListener('click', resetarConfiguracoesComConfirmacao);
+      });
     </script>
+
+  </div>
+
 </body>
 
 </html>

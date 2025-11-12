@@ -43,10 +43,7 @@
 <body>
     <header>
         <nav class="nav-menu">
-            <!-- Ícone de configurações -->
-            <div id="configIcon" style="position: fixed; top: 20px; right: 20px; z-index: 2000; cursor: pointer;">
-                ⚙️
-            </div>
+        
 
             <!-- Modal de Configurações -->
             <div id="configModal" class="modal">
@@ -117,8 +114,8 @@
         </div>
 
     </div>
-
-    <script     >
+    <script src="/app.js"></script>
+    <script>
         document.addEventListener("DOMContentLoaded", () => {
             // Aplica o tema salvo
             if (localStorage.getItem("tema") === "dark") {

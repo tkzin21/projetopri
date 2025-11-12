@@ -72,4 +72,85 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   
   });
+  function resetarConfiguracoes() {
+    // Apaga só as configs, sem apagar eventos
+    localStorage.removeItem('agendaai_tema');
+    localStorage.removeItem('agendaai_darkmode');
+    localStorage.removeItem('agendaai_view');
+    localStorage.removeItem('agendaai_config');
+    localStorage.removeItem('agendaai_user');
   
+    // Se tiver mais configurações salvas, coloca aqui.
+  
+    // Recarrega para aplicar o reset
+    location.reload();
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    const btnReset = document.getElementById("resetarTudo");
+  
+    if (btnReset) {
+      btnReset.addEventListener("click", function () {
+        console.log("Botão reset detectado!");
+  
+        // apaga as configs
+        localStorage.clear();
+  
+        // recarrega a página
+        location.reload();
+      });
+    }
+  });
+  function resetarConfiguracoesSelecionadas() {
+    console.log("Resetando apenas configs específicas...");
+  
+    // Lista das chaves que você quer resetar
+    const chavesConfigs = [
+      "agendaai_tema",
+      "agendaai_darkmode",
+      "agendaai_view",
+      "agendaai_config"
+    ];
+  
+    // Apaga cada uma
+    chavesConfigs.forEach(chave => localStorage.removeItem(chave));
+  
+    // Recarrega a página para aplicar as alterações
+    location.reload();
+  }
+  function resetarConfiguracoesComConfirmacao() {
+    // Mensagem de confirmação
+    const confirmacao = confirm("Tem certeza que deseja resetar todas as configurações? Isso não afetará seus eventos.");
+    
+    if (!confirmacao) return; // Sai se o usuário cancelar
+  
+    console.log("Resetando apenas configs específicas...");
+  
+    // Lista das chaves que você quer resetar
+    const chavesConfigs = [
+      "agendaai_tema",
+      "agendaai_darkmode",
+      "agendaai_view",
+      "agendaai_config"
+    ];
+  
+    // Apaga cada uma
+    chavesConfigs.forEach(chave => localStorage.removeItem(chave));
+  
+    // Recarrega a página para aplicar as alterações
+    location.reload();
+  }
+  function apagarAgendamento(id) {
+    if (!confirm("Tem certeza que deseja apagar este agendamento?")) return;
+  
+    // pega todos os agendamentos
+    let agendamentos = JSON.parse(localStorage.getItem("agendaai_agendamentos") || "[]");
+  
+    // filtra o agendamento que não queremos manter
+    agendamentos = agendamentos.filter(a => a.id !== id);
+  
+    // salva de volta
+    localStorage.setItem("agendaai_agendamentos", JSON.stringify(agendamentos));
+  
+    // atualiza a tela (pode ser recarregar ou re-renderizar)
+    location.reload();
+  }
