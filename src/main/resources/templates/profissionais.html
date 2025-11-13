@@ -68,11 +68,28 @@
           <td th:text="${p.nome}"></td>
           <td th:text="${p.especialidade}"></td>
           <td th:text="${p.telefone}"></td>
-          <td>
-            <a th:href="@{'/profissionais/editar/' + ${p.id}}">✏️Editar</a> |
-            <a th:href="@{'/profissionais/excluir/' + ${p.id}}"
-              onclick="return confirm('Deseja realmente excluir?')">🗑️Excluir</a>
-          </td>
+          <td style="display: flex;">
+
+            <!-- Botão Editar -->
+            <form th:action="@{'/profissionais/editar/' + ${p.id}}" method="get" class="btn-editar-form">
+                <button type="submit" class="btn-editar">
+                    ✏️ Editar
+                </button>
+            </form>
+        
+            
+        
+            <!-- Botão Excluir -->
+            <form th:action="@{'/profissionais/apagar/' + ${p.id}}" 
+                  method="post" 
+                  class="btn-excluir-form"
+                  onsubmit="return confirm('Deseja realmente excluir este profissional?')">
+                <button type="submit" class="btn-excluir">
+                    🗑️ Excluir
+                </button>
+            </form>
+        
+        </td>
         </tr>
       </tbody>
     </table>

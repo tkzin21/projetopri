@@ -15,7 +15,6 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     List<Agendamento> findByProfissionalId(Long profissionalId);
     boolean existsByProfissionalId(Long profissionalId);
 
-    long countByProfissionalId(Long id);
-    // NÃO precisa implementar findAll() aqui! 
-    // JpaRepository já fornece automaticamente
+    long countByProfissionalId(Long profissionalId);
+
 }

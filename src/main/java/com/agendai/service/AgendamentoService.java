@@ -23,6 +23,16 @@ public class AgendamentoService {
     @Autowired
     private ProfissionalRepository profissionalRepository;
 
+    public void delete(Long id) {
+        long count = agendamentoRepository.countByProfissionalId(id);
+
+        if (count > 0) {
+            throw new RuntimeException("Não é possível excluir: existem agendamentos vinculados.");
+        }
+
+        profissionalRepository.deleteById(id);
+    }
+
     public Agendamento salvarAgendamento(Agendamento agendamento) {
         LocalDateTime inicioNovo = agendamento.getDataHora();
         LocalDateTime fimNovo = inicioNovo.plusMinutes(agendamento.getDuracao());
@@ -67,16 +77,19 @@ public class AgendamentoService {
     public List<Profissional> listarProfissionais() {
         return profissionalRepository.findAll();
     }
-     // apagar agendamento por ID
-     public void deleteById(Long id) {
+
+    // apagar agendamento por ID
+    public void deleteById(Long id) {
         agendamentoRepository.deleteById(id);
     }
-     // Apaga todos os agendamentos
-     public void deleteAll() {
+
+    // Apaga todos os agendamentos
+    public void deleteAll() {
         agendamentoRepository.deleteAll();
     }
-      // Lista todos os agendamentos
-      public List<Agendamento> findAll() {
+
+    // Lista todos os agendamentos
+    public List<Agendamento> findAll() {
         return agendamentoRepository.findAll();
     }
 }

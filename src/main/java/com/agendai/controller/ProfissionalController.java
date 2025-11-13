@@ -15,8 +15,10 @@ public class ProfissionalController {
     
     @Autowired
     private ProfissionalRepository repository;
+
     @Autowired
     private AgendamentoRepository agendamentoRepository;
+
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("profissionais", repository.findAll());
@@ -37,13 +39,8 @@ public class ProfissionalController {
         return "profissionais";
     }
 
-    @GetMapping("/excluir/{id}")
-    public String excluir(@PathVariable Long id) {
-        repository.deleteById(id);
-        return "redirect:/profissionais";
-    }
-
-    @PostMapping("/profissionais/apagar/{id}")
+   
+    @PostMapping("/apagar/{id}")
     public String apagarProfissional(@PathVariable Long id, RedirectAttributes ra) {
 
         long qtdAgendamentos = agendamentoRepository.countByProfissionalId(id);
@@ -56,5 +53,4 @@ public class ProfissionalController {
         repository.deleteById(id);
         return "redirect:/profissionais";
     }
-    
 }
