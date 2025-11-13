@@ -8,10 +8,19 @@
 </head>
 
 <body>
+
+  <!-- ================= MODAL DE BLOQUEIO ================= -->
+  <div id="modalBloqueio" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" id="fecharModalBloqueio">&times;</span>
+      <h2>Não é possível excluir</h2>
+      <p>Este profissional possui agendamentos ativos e não pode ser excluído.</p>
+    </div>
+  </div>
+  <!-- ===================================================== -->
+
   <header>
     <nav class="nav-menu">
-      <!-- Ícone de configurações -->
-
 
       <!-- Modal de Configurações -->
       <div id="configModal" class="modal">
@@ -19,7 +28,6 @@
           <span class="close" id="closeConfig">&times;</span>
           <h2>Configurações</h2>
 
-          <!-- Conteúdo da aba de configurações -->
           <div class="config-section">
             <h3>Tema</h3>
             <label class="switch">
@@ -34,6 +42,7 @@
           </div>
         </div>
       </div>
+
       <a href="/">Agendamentos</a>
       <a href="/clientes">Clientes</a>
       <a href="/profissionais" class="ativo">Profissionais</a>
@@ -68,143 +77,107 @@
           <td th:text="${p.nome}"></td>
           <td th:text="${p.especialidade}"></td>
           <td th:text="${p.telefone}"></td>
-          <td style="display: flex;">
+
+          <!-- 🔥 TD CORRIGIDO – sem TD dentro de TD -->
+          <td style="display: flex; gap: 10px;">
 
             <!-- Botão Editar -->
-            <form th:action="@{'/profissionais/editar/' + ${p.id}}" method="get" class="btn-editar-form">
-                <button type="submit" class="btn-editar">
-                    ✏️ Editar
-                </button>
+            <form th:action="@{'/profissionais/editar/' + ${p.id}}" method="get" style="display:inline;">
+              <button type="submit" class="btn-editar">✏️ Editar</button>
             </form>
-        
-            
-        
+
             <!-- Botão Excluir -->
-            <form th:action="@{'/profissionais/apagar/' + ${p.id}}" 
-                  method="post" 
-                  class="btn-excluir-form"
-                  onsubmit="return confirm('Deseja realmente excluir este profissional?')">
-                <button type="submit" class="btn-excluir">
-                    🗑️ Excluir
-                </button>
+            <form th:action="@{'/profissionais/apagar/' + ${p.id}}" method="post" style="display:inline;">
+              <button type="submit" class="btn-excluir">🗑️ Excluir</button>
             </form>
-        
-        </td>
+
+          </td>
         </tr>
       </tbody>
     </table>
   </main>
-  <div id="modalBloqueioProfissional" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="close" id="fecharBloqueio">&times;</span>
-      <h2>Não é possível excluir</h2>
-      <p>Este profissional possui agendamentos ativos e não pode ser excluído.</p>
-    </div>
-  </div>
+
   <script src="/app.js"></script>
+  <script th:inline="javascript">
+    const bloqueado = [[${profissionalBloqueado} ?: false]];
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const modalBloqueio = document.getElementById("modalBloqueio");
+  const fecharBloqueio = document.getElementById("fecharModalBloqueio");
+
+  if (bloqueado) {
+    modalBloqueio.style.display = "block";
+  }
+
+  if (fecharBloqueio) {
+    fecharBloqueio.onclick = () => modalBloqueio.style.display = "none";
+  }
+
+  window.onclick = e => {
+    if (e.target === modalBloqueio) {
+      modalBloqueio.style.display = "none";
+    }
+  };
+
+});
+</script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Aplica o tema salvo
+
+      /* -------------------- TEMA ---------------------- */
       if (localStorage.getItem("tema") === "dark") {
         document.body.classList.add("dark");
       }
 
-      // Modal de Configurações
+      const temaSwitch = document.getElementById("temaSwitch");
+      if (temaSwitch) {
+        temaSwitch.checked = document.body.classList.contains("dark");
+        temaSwitch.addEventListener("change", () => {
+          document.body.classList.toggle("dark");
+          localStorage.setItem("tema",
+            document.body.classList.contains("dark") ? "dark" : "light"
+          );
+        });
+      }
+
+      /* -------------------- MODAL CONFIG ---------------------- */
       const configIcon = document.getElementById("configIcon");
       const configModal = document.getElementById("configModal");
       const closeConfig = document.getElementById("closeConfig");
 
       if (configIcon && configModal && closeConfig) {
-        // Abre o modal
-        configIcon.addEventListener("click", () => {
-          configModal.style.display = "block";
-        });
+        configIcon.addEventListener("click", () => configModal.style.display = "block");
+        closeConfig.addEventListener("click", () => configModal.style.display = "none");
 
-        // Fecha ao clicar no X
-        closeConfig.addEventListener("click", () => {
-          configModal.style.display = "none";
-        });
-
-        // Fecha ao clicar fora do modal
         window.addEventListener("click", (e) => {
-          if (e.target === configModal) {
-            configModal.style.display = "none";
-          }
+          if (e.target === configModal) configModal.style.display = "none";
         });
       }
 
-      // Tema dark/light
-      const temaSwitch = document.getElementById("temaSwitch");
-      if (temaSwitch) {
-        // Inicializa checkbox
-        temaSwitch.checked = document.body.classList.contains("dark");
+      /* -------------------- MODAL BLOQUEIO ---------------------- */
+      const modalBloqueio = document.getElementById("modalBloqueio");
+      const fecharBloqueio = document.getElementById("fecharModalBloqueio");
 
-        temaSwitch.addEventListener("change", () => {
-          document.body.classList.toggle("dark");
-          localStorage.setItem("tema", document.body.classList.contains("dark") ? "dark" : "light");
-        });
-      }
-    });
-  </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Aplica o tema salvo
-      if (localStorage.getItem("tema") === "dark") {
-        document.body.classList.add("dark");
-      }
-
-      // Modal de Configurações
-      const configIcon = document.getElementById("configIcon");
-      const configModal = document.getElementById("configModal");
-      const closeConfig = document.getElementById("closeConfig");
-
-      if (configIcon && configModal && closeConfig) {
-        // Abre o modal
-        configIcon.addEventListener("click", () => {
-          configModal.style.display = "block";
-        });
-
-        // Fecha ao clicar no X
-        closeConfig.addEventListener("click", () => {
-          configModal.style.display = "none";
-        });
-
-        // Fecha ao clicar fora do modal
-        window.addEventListener("click", (e) => {
-          if (e.target === configModal) {
-            configModal.style.display = "none";
-          }
-        });
-      }
-
-      // Tema dark/light
-      const temaSwitch = document.getElementById("temaSwitch");
-      if (temaSwitch) {
-        // Inicializa checkbox
-        temaSwitch.checked = document.body.classList.contains("dark");
-
-        temaSwitch.addEventListener("change", () => {
-          document.body.classList.toggle("dark");
-          localStorage.setItem("tema", document.body.classList.contains("dark") ? "dark" : "light");
-        });
-      }
-    });
-    document.addEventListener("DOMContentLoaded", function () {
-      const modal = document.getElementById("modalBloqueioProfissional");
-      const fechar = document.getElementById("fecharBloqueio");
-
-      // Thymeleaf coloca esse valor como boolean
-      const bloqueado = /*[[${profissionalBloqueado}]]*/ false;
+     
 
       if (bloqueado) {
-        modal.style.display = "block";
+        modalBloqueio.style.display = "block";
       }
 
-      fechar.onclick = () => modal.style.display = "none";
-      window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
-    });
-  </script>
+      if (fecharBloqueio) {
+        fecharBloqueio.onclick = () => modalBloqueio.style.display = "none";
+      }
 
+      window.onclick = (e) => {
+        if (e.target === modalBloqueio) modalBloqueio.style.display = "none";
+      };
+
+    });
+   
+  </script>
 
 </body>
 

@@ -12,10 +12,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/profissionais")
 public class ProfissionalController {
-    
+
     @Autowired
     private ProfissionalRepository repository;
-
     @Autowired
     private AgendamentoRepository agendamentoRepository;
 
@@ -39,7 +38,7 @@ public class ProfissionalController {
         return "profissionais";
     }
 
-   
+  
     @PostMapping("/apagar/{id}")
     public String apagarProfissional(@PathVariable Long id, RedirectAttributes ra) {
 
@@ -53,4 +52,5 @@ public class ProfissionalController {
         repository.deleteById(id);
         return "redirect:/profissionais";
     }
+
 }
