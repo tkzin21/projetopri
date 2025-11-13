@@ -72,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   
   });
+<<<<<<< HEAD
   function resetarConfiguracoes() {
     // Apaga só as configs, sem apagar eventos
     localStorage.removeItem('agendaai_tema');
@@ -154,3 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // atualiza a tela (pode ser recarregar ou re-renderizar)
     location.reload();
   }
+=======
+  
+  
+>>>>>>> 18bf45771d8ae1d12ddd47d770e4decc04366f8c
