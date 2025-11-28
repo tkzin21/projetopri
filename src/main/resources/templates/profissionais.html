@@ -99,7 +99,7 @@
 
   <script src="/app.js"></script>
   <script th:inline="javascript">
-    const bloqueado = [[${profissionalBloqueado} ?: false]];
+    const bloqueado = [[${profissionalBloqueado != null ? profissionalBloqueado : false}]];
 </script>
 
 <script>
